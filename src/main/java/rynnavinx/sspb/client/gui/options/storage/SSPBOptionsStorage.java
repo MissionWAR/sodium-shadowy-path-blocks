@@ -1,6 +1,6 @@
 package rynnavinx.sspb.client.gui.options.storage;
 
-import me.jellysquid.mods.sodium.client.gui.options.storage.OptionStorage;
+import net.caffeinemc.mods.sodium.client.gui.options.storage.OptionStorage;
 
 import rynnavinx.sspb.client.SSPBClientMod;
 import rynnavinx.sspb.client.gui.SSPBGameOptions;

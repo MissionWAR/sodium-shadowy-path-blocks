@@ -1,8 +1,8 @@
 package rynnavinx.sspb.mixin.sodium;
 
-import me.jellysquid.mods.sodium.client.model.light.data.LightDataAccess;
-import me.jellysquid.mods.sodium.client.model.light.smooth.SmoothLightPipeline;
-import me.jellysquid.mods.sodium.client.model.light.data.QuadLightData;
+import net.caffeinemc.mods.sodium.client.model.light.data.LightDataAccess;
+import net.caffeinemc.mods.sodium.client.model.light.smooth.SmoothLightPipeline;
+import net.caffeinemc.mods.sodium.client.model.light.data.QuadLightData;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -39,7 +39,7 @@ public abstract class MixinSmoothLightPipeline {
 	static {
 		try {
 			MethodHandles.Lookup lookup = MethodHandles.lookup();
-			Class<?> aoFaceDataClass = Class.forName("me.jellysquid.mods.sodium.client.model.light.smooth.AoFaceData");
+			Class<?> aoFaceDataClass = Class.forName("net.caffeinemc.mods.sodium.client.model.light.smooth.AoFaceData");
 
 			sspb$getCachedFaceDataHandle = lookup.findVirtual(SmoothLightPipeline.class, "getCachedFaceData", MethodType.methodType(aoFaceDataClass, BlockPos.class, Direction.class, boolean.class));
 		} catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
@@ -109,12 +109,12 @@ public abstract class MixinSmoothLightPipeline {
 	}
 
 
-	@Redirect(method = "applyParallelFace", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILme/jellysquid/mods/sodium/client/model/light/data/QuadLightData;)V"))
+	@Redirect(method = "applyParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;)V"))
 	private void redirectParallelApplyInset(SmoothLightPipeline self, BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out){
 		sspb$applyInsetPartialFaceVertex(pos, dir, n1d, n2d, w, i, out, true);
 	}
 
-	@Redirect(method = "applyNonParallelFace", at = @At(value = "INVOKE", target = "Lme/jellysquid/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILme/jellysquid/mods/sodium/client/model/light/data/QuadLightData;)V"))
+	@Redirect(method = "applyNonParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;)V"))
 	private void redirectNonParallelApplyInset(SmoothLightPipeline self, BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out){
 		sspb$applyInsetPartialFaceVertex(pos, dir, n1d, n2d, w, i, out, false);
 	}

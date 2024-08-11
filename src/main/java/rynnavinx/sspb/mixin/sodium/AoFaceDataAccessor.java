@@ -4,7 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 
-@Mixin(targets = "me.jellysquid.mods.sodium.client.model.light.smooth.AoFaceData")
+@Mixin(targets = "net.caffeinemc.mods.sodium.client.model.light.smooth.AoFaceData")
 public interface AoFaceDataAccessor {
 
 	@Invoker(value = "getBlendedShade", remap = false)
