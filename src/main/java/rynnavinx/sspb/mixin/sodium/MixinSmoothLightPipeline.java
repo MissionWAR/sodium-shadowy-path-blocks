@@ -4,11 +4,13 @@ import net.caffeinemc.mods.sodium.client.model.light.data.LightDataAccess;
 import net.caffeinemc.mods.sodium.client.model.light.smooth.SmoothLightPipeline;
 import net.caffeinemc.mods.sodium.client.model.light.data.QuadLightData;
 
+import net.caffeinemc.mods.sodium.client.model.quad.ModelQuadView;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import net.minecraft.util.math.BlockPos;
@@ -41,7 +43,7 @@ public abstract class MixinSmoothLightPipeline {
 			MethodHandles.Lookup lookup = MethodHandles.lookup();
 			Class<?> aoFaceDataClass = Class.forName("net.caffeinemc.mods.sodium.client.model.light.smooth.AoFaceData");
 
-			sspb$getCachedFaceDataHandle = lookup.findVirtual(SmoothLightPipeline.class, "getCachedFaceData", MethodType.methodType(aoFaceDataClass, BlockPos.class, Direction.class, boolean.class));
+			sspb$getCachedFaceDataHandle = lookup.findVirtual(SmoothLightPipeline.class, "getCachedFaceData", MethodType.methodType(aoFaceDataClass, BlockPos.class, Direction.class, boolean.class, boolean.class));
 		} catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -49,23 +51,23 @@ public abstract class MixinSmoothLightPipeline {
 
 
 	@Unique @SuppressWarnings({"JavaLangInvokeHandleSignature", "DataFlowIssue"})
-	private AoFaceDataAccessor sspb$getCachedFaceData(BlockPos pos, Direction dir, boolean offset){
+	private AoFaceDataAccessor sspb$getCachedFaceData(BlockPos pos, Direction dir, boolean offset, boolean shade){
 		try {
-			return (AoFaceDataAccessor) sspb$getCachedFaceDataHandle.invoke((SmoothLightPipeline) (Object) this, pos, dir, offset);
+			return (AoFaceDataAccessor) sspb$getCachedFaceDataHandle.invoke((SmoothLightPipeline) (Object) this, pos, dir, offset, shade);
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Unique
-	private void sspb$applyInsetPartialFaceVertex(BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out, boolean isParallel){
-		AoFaceDataAccessor n1 = sspb$getCachedFaceData(pos, dir, false);
+	private void sspb$applyInsetPartialFaceVertex(BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out, boolean shade, boolean isParallel){
+		AoFaceDataAccessor n1 = sspb$getCachedFaceData(pos, dir, false, shade);
 
 		if(!n1.sspb$invokeHasUnpackedLightData()){
 			n1.sspb$invokeUnpackLightData();
 		}
 
-		AoFaceDataAccessor n2 = sspb$getCachedFaceData(pos, dir, true);
+		AoFaceDataAccessor n2 = sspb$getCachedFaceData(pos, dir, true, shade);
 
 		if(!n2.sspb$invokeHasUnpackedLightData()){
 			n2.sspb$invokeUnpackLightData();
@@ -83,10 +85,10 @@ public abstract class MixinSmoothLightPipeline {
 		float sl;
 		float bl;
 
-		BlockState blockState = lightCache.getWorld().getBlockState(pos);
+		BlockState blockState = lightCache.getLevel().getBlockState(pos);
 		boolean onlyAffectPathBlocks = SSPBClientMod.options().onlyAffectPathBlocks;
 
-		if((!onlyAffectPathBlocks && blockState.isTransparent(lightCache.getWorld(), pos)) ||
+		if((!onlyAffectPathBlocks && blockState.isTransparent(lightCache.getLevel(), pos)) ||
 				(isParallel && onlyAffectPathBlocks && blockState.getBlock() instanceof DirtPathBlock)){
 
 			// Mix between sodium inset lighting (default applyInsetPartialFaceVertex) and vanilla-like inset lighting (applyAlignedPartialFaceVertex).
@@ -109,13 +111,21 @@ public abstract class MixinSmoothLightPipeline {
 	}
 
 
-	@Redirect(method = "applyParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;)V"))
-	private void redirectParallelApplyInset(SmoothLightPipeline self, BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out){
-		sspb$applyInsetPartialFaceVertex(pos, dir, n1d, n2d, w, i, out, true);
+	@Redirect(method = "applyParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;Z)V"))
+	private void redirectParallelApplyInset(SmoothLightPipeline instance, BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out, boolean shade){
+		sspb$applyInsetPartialFaceVertex(pos, dir, n1d, n2d, w, i, out, shade, true);
 	}
 
-	@Redirect(method = "applyNonParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;)V"))
-	private void redirectNonParallelApplyInset(SmoothLightPipeline self, BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out){
-		sspb$applyInsetPartialFaceVertex(pos, dir, n1d, n2d, w, i, out, false);
+	@Redirect(method = "applyNonParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;Z)V"))
+	private void redirectNonParallelApplyInset(SmoothLightPipeline instance, BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out, boolean shade){
+		sspb$applyInsetPartialFaceVertex(pos, dir, n1d, n2d, w, i, out, shade, false);
+	}
+
+	@ModifyVariable(method = "gatherInsetFace", at = @At("STORE"), ordinal = 0, remap = false)
+	private float modifyGatherInsetFaceW1(float w1, ModelQuadView quad, BlockPos blockPos, int vertexIndex, Direction lightFace, boolean shade){
+		if(SSPBClientMod.options().onlyAffectPathBlocks && !(lightCache.getLevel().getBlockState(blockPos).getBlock() instanceof DirtPathBlock)){
+			return w1;
+		}
+		return (w1 * SSPBClientMod.options().getShadowynessCompliment()) + (SSPBClientMod.options().getShadowyness());
 	}
 }

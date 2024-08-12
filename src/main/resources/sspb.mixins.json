@@ -4,9 +4,6 @@
   "package": "rynnavinx.sspb.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
-    "indium.MixinAoCalculator",
-    "minecraft.IdentifierAccessor",
-    "minecraft.MixinModelLoader",
     "sodium.AoFaceDataAccessor",
     "sodium.MixinSmoothLightPipeline",
     "sodium.MixinSodiumOptionsGUI"
