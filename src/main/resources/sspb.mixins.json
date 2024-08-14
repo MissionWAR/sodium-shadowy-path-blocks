@@ -4,6 +4,9 @@
   "package": "rynnavinx.sspb.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "minecraft.AmbientOcclusionCalculatorAccessor",
+    "minecraft.BlockModelRendererAccessor",
+    "minecraft.frapi.MixinBlockModelRenderer",
     "sodium.AoFaceDataAccessor",
     "sodium.MixinSmoothLightPipeline",
     "sodium.MixinSodiumOptionsGUI"

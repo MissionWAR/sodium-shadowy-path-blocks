@@ -43,6 +43,10 @@ dependencies {
 	modImplementation "maven.modrinth:indium:${project.indium_version}"
 }
 
+loom {
+	accessWidenerPath = file("src/main/resources/sspb.accesswidener")
+}
+
 processResources {
 	inputs.property "version", project.version
 

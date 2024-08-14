@@ -27,6 +27,8 @@
     "sspb.mixins.json"
   ],
 
+  "accessWidener" : "sspb.accesswidener",
+
   "depends": {
     "fabricloader": ">=0.12.10",
     "java": ">=17",
