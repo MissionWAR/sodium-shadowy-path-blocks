@@ -9,13 +9,21 @@
     "Rynnavinx"
   ],
   "contact": {
-    "homepage": "https://www.curseforge.com/minecraft/mc-mods/sodium-shadowy-path-blocks",
     "sources": "https://github.com/Rynnavinx/sodium-shadowy-path-blocks",
     "issues": "https://github.com/Rynnavinx/sodium-shadowy-path-blocks/issues"
   },
 
   "license": "LGPLv3",
   "icon": "assets/sspb/icon.png",
+
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.modrinth": "https://modrinth.com/mod/sodium-shadowy-path-blocks",
+        "modmenu.curseforge" : "https://www.curseforge.com/minecraft/mc-mods/sodium-shadowy-path-blocks"
+      }
+    }
+  },
 
   "environment": "client",
   "entrypoints": {
