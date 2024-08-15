@@ -45,7 +45,7 @@ public class SSPBGameOptionPages {
                         .setTooltip(Text.translatable("sspb.options.vanillapathblocklighting.tooltip"))
                         .setControl(TickBoxControl::new)
                         .setBinding((opts, value) -> opts.vanillaPathBlockLighting = value, opts -> opts.vanillaPathBlockLighting)
-                        .setFlags(OptionFlag.REQUIRES_ASSET_RELOAD)
+                        .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD)
                         .build())
                 .build());
 
