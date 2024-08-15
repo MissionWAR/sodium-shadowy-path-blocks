@@ -39,8 +39,6 @@ dependencies {
 	modImplementation files("custom_sodium/sodium-fabric-${project.sodium_version}.jar")
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	modImplementation "maven.modrinth:indium:${project.indium_version}"
 }
 
 loom {

@@ -10,8 +10,6 @@ import net.caffeinemc.mods.sodium.client.gui.options.control.ControlValueFormatt
 import net.caffeinemc.mods.sodium.client.gui.options.control.SliderControl;
 import net.caffeinemc.mods.sodium.client.gui.options.control.TickBoxControl;
 
-import net.fabricmc.loader.api.FabricLoader;
-
 import net.minecraft.text.Text;
 
 import rynnavinx.sspb.client.gui.options.storage.SSPBOptionsStorage;
@@ -23,8 +21,6 @@ import java.util.List;
 public class SSPBGameOptionPages {
 
     private static final SSPBOptionsStorage sspbOpts = new SSPBOptionsStorage();
-
-    private static boolean vanillaPathBlockLightingOptEnabled = FabricLoader.getInstance().isModLoaded("indium");
 
 
     public static OptionPage sspb() {
@@ -50,14 +46,9 @@ public class SSPBGameOptionPages {
                         .setControl(TickBoxControl::new)
                         .setBinding((opts, value) -> opts.vanillaPathBlockLighting = value, opts -> opts.vanillaPathBlockLighting)
                         .setFlags(OptionFlag.REQUIRES_ASSET_RELOAD)
-                        .setEnabled(vanillaPathBlockLightingOptEnabled)
                         .build())
                 .build());
 
         return new OptionPage(Text.translatable("sspb.pages.sspb_page.name"), ImmutableList.copyOf(groups));
-    }
-
-    public static void setVanillaPathBlockLightingOptEnabled(boolean isEnabled){
-        vanillaPathBlockLightingOptEnabled = isEnabled;
     }
 }
