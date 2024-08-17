@@ -28,6 +28,13 @@ import net.caffeinemc.mods.sodium.client.model.quad.ModelQuadView;
 import net.caffeinemc.mods.sodium.client.render.frapi.mesh.EncodingFormat;
 import net.caffeinemc.mods.sodium.client.render.frapi.mesh.QuadViewImpl;
 
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.DirtPathBlock;
+import net.minecraft.world.level.block.state.BlockState;
+
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,16 +42,9 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.DirtPathBlock;
-import net.minecraft.client.render.block.BlockModelRenderer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockRenderView;
-
 import rynnavinx.sspb.client.SSPBClientMod;
 import rynnavinx.sspb.client.render.frapi.aocalc.VanillaAoHelper;
-import rynnavinx.sspb.mixin.minecraft.AmbientOcclusionCalculatorAccessor;
+import rynnavinx.sspb.mixin.minecraft.AmbientOcclusionFaceAccessor;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -115,7 +115,7 @@ public abstract class MixinSmoothLightPipeline {
 		BlockState blockState = lightCache.getLevel().getBlockState(pos);
 		boolean onlyAffectPathBlocks = SSPBClientMod.options().onlyAffectPathBlocks;
 
-		if((!onlyAffectPathBlocks && blockState.isTransparent(lightCache.getLevel(), pos)) ||
+		if((!onlyAffectPathBlocks && blockState.propagatesSkylightDown(lightCache.getLevel(), pos)) ||
 				(isParallel && onlyAffectPathBlocks && blockState.getBlock() instanceof DirtPathBlock)){
 
 			// Mix between sodium inset lighting (default applyInsetPartialFaceVertex) and vanilla-like inset lighting (applyAlignedPartialFaceVertex).
@@ -138,12 +138,12 @@ public abstract class MixinSmoothLightPipeline {
 	}
 
 
-	@Redirect(method = "applyParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;Z)V"))
+	@Redirect(method = "applyParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;Z)V"))
 	private void redirectParallelApplyInset(SmoothLightPipeline instance, BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out, boolean shade){
 		sspb$applyInsetPartialFaceVertex(pos, dir, n1d, n2d, w, i, out, shade, true);
 	}
 
-	@Redirect(method = "applyNonParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;Z)V"))
+	@Redirect(method = "applyNonParallelFace", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyInsetPartialFaceVertex(Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;FF[FILnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;Z)V"))
 	private void redirectNonParallelApplyInset(SmoothLightPipeline instance, BlockPos pos, Direction dir, float n1d, float n2d, float[] w, int i, QuadLightData out, boolean shade){
 		sspb$applyInsetPartialFaceVertex(pos, dir, n1d, n2d, w, i, out, shade, false);
 	}
@@ -156,7 +156,7 @@ public abstract class MixinSmoothLightPipeline {
 		return (w1 * SSPBClientMod.options().getShadowynessCompliment()) + (SSPBClientMod.options().getShadowyness());
 	}
 
-	@Inject(method = "calculate", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyParallelFace(Lnet/caffeinemc/mods/sodium/client/model/light/smooth/AoNeighborInfo;Lnet/caffeinemc/mods/sodium/client/model/quad/ModelQuadView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/Direction;Lnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;Z)V", shift = At.Shift.BEFORE), cancellable = true)
+	@Inject(method = "calculate", at = @At(value = "INVOKE", target = "Lnet/caffeinemc/mods/sodium/client/model/light/smooth/SmoothLightPipeline;applyParallelFace(Lnet/caffeinemc/mods/sodium/client/model/light/smooth/AoNeighborInfo;Lnet/caffeinemc/mods/sodium/client/model/quad/ModelQuadView;Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;Lnet/caffeinemc/mods/sodium/client/model/light/data/QuadLightData;Z)V", shift = At.Shift.BEFORE), cancellable = true)
 	private void injectVanillaAoCalcForPathBlocks(ModelQuadView quad, BlockPos pos, QuadLightData out, Direction cullFace, Direction lightFace, boolean shade, boolean isFluid, CallbackInfo ci){
 		if(SSPBClientMod.options().vanillaPathBlockLighting && lightCache.getLevel().getBlockState(pos).getBlock() instanceof DirtPathBlock){
 			sspb$calcVanilla((QuadViewImpl) quad, out.br, out.lm, pos, lightFace, shade);
@@ -171,7 +171,7 @@ public abstract class MixinSmoothLightPipeline {
 	 */
 
 	@Unique
-	private final BlockModelRenderer.AmbientOcclusionCalculator sspb$vanillaCalc = new BlockModelRenderer.AmbientOcclusionCalculator();
+	private final ModelBlockRenderer.AmbientOcclusionFace sspb$vanillaCalc = new ModelBlockRenderer.AmbientOcclusionFace();
 
 	// These are what vanilla AO calc wants, per its usage in vanilla code
 	// Because this instance is effectively thread-local, we preserve instances
@@ -189,12 +189,12 @@ public abstract class MixinSmoothLightPipeline {
 		sspb$vanillaAoControlBits.clear();
 		quad.toVanilla(sspb$vertexData, 0);
 
-		BlockRenderView level = lightCache.getLevel();
+		BlockAndTintGetter level = lightCache.getLevel();
 
 		VanillaAoHelper.updateShape(level, level.getBlockState(pos), pos, sspb$vertexData, lightFace, sspb$vanillaAoData, sspb$vanillaAoControlBits);
-		sspb$vanillaCalc.apply(level, level.getBlockState(pos), pos, lightFace, sspb$vanillaAoData, sspb$vanillaAoControlBits, shade);
+		sspb$vanillaCalc.calculate(level, level.getBlockState(pos), pos, lightFace, sspb$vanillaAoData, sspb$vanillaAoControlBits, shade);
 
-		System.arraycopy(((AmbientOcclusionCalculatorAccessor) sspb$vanillaCalc).sspb$getBrightness(), 0, aoDest, 0, 4);
-		System.arraycopy(((AmbientOcclusionCalculatorAccessor) sspb$vanillaCalc).sspb$getLight(), 0, lightDest, 0, 4);
+		System.arraycopy(((AmbientOcclusionFaceAccessor) sspb$vanillaCalc).sspb$getBrightness(), 0, aoDest, 0, 4);
+		System.arraycopy(((AmbientOcclusionFaceAccessor) sspb$vanillaCalc).sspb$getLightmap(), 0, lightDest, 0, 4);
 	}
 }

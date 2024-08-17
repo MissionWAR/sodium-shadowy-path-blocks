@@ -21,7 +21,7 @@
 
 package rynnavinx.sspb.mixin.minecraft.frapi;
 
-import net.minecraft.client.render.block.BlockModelRenderer;
+import net.minecraft.client.renderer.block.ModelBlockRenderer;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,11 +31,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import rynnavinx.sspb.client.render.frapi.aocalc.VanillaAoHelper;
 
 
-@Mixin(BlockModelRenderer.class)
-public abstract class MixinBlockModelRenderer {
+@Mixin(ModelBlockRenderer.class)
+public abstract class MixinModelBlockRenderer {
 
     @Inject(at = @At("RETURN"), method = "<init>*")
     private void onInit(CallbackInfo ci) {
-        VanillaAoHelper.initialize((BlockModelRenderer) (Object) this);
+        VanillaAoHelper.initialize((ModelBlockRenderer) (Object) this);
     }
 }

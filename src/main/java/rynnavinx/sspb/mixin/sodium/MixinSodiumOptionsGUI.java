@@ -22,7 +22,7 @@ public abstract class MixinSodiumOptionsGUI {
     private List<OptionPage> pages;
 
 
-    @Inject(method = "<init>(Lnet/minecraft/client/gui/screen/Screen;)V", at = @At("TAIL"))
+    @Inject(method = "<init>*", at = @At("TAIL"))
     private void addSSPBOptionPage(CallbackInfo ci){
         this.pages.add(SSPBGameOptionPages.sspb());
     }
