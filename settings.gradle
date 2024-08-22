@@ -36,6 +36,18 @@ pluginManagement {
                 includeGroupAndSubgroups('net.minecraftforge')
             }
         }
+        exclusiveContent {
+            forRepository {
+                maven {
+                    name = 'NeoForge'
+                    url = uri("https://maven.neoforged.net/releases")
+                }
+            }
+            filter {
+                includeGroupAndSubgroups("net.neoforged")
+                includeGroup("codechicken")
+            }
+        }
     }
 }
 
@@ -47,5 +59,5 @@ plugins {
 rootProject.name = 'sodium-shadowy-path-blocks'
 include('common')
 include('fabric')
-//include('neoforge')
+include('neoforge')
 //include('forge')
