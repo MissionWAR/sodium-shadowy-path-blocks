@@ -9,8 +9,6 @@ base {
 
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(21)
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
     withSourcesJar()
     // withJavadocJar()
 }
@@ -54,10 +52,10 @@ repositories {
 }
 
 dependencies {
-    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    compileOnly "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
 
-    // implementation "maven.modrinth:sodium:${sodium_version}"
-    implementation files("${rootProject.rootDir}/custom_sodium/sodium-neoforge-${sodium_version}.jar")
+    // implementation "maven.modrinth:sodium:${sodium_version}-neoforge"
+    // implementation files("${rootProject.rootDir}/custom_sodium/sodium-neoforge-${sodium_version}.jar")
 }
 
 // Declare capabilities on the outgoing configurations.
@@ -115,7 +113,6 @@ processResources {
             'forge_version'                : forge_version,
             'forge_loader_version_range'   : forge_loader_version_range,
             'credits'                      : credits,
-            'java_version'                 : java_version,
             'archives_base_name'           : archives_base_name,
 			'sodium_version'               : sodium_version
     ]
