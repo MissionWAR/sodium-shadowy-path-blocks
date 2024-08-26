@@ -15,10 +15,10 @@ import rynnavinx.sspb.common.client.gui.SSPBGameOptionPages;
 import java.util.List;
 
 
-@Mixin(SodiumOptionsGUI.class)
+@Mixin(value = SodiumOptionsGUI.class, remap = false)
 public abstract class MixinSodiumOptionsGUI {
 
-    @Final @Shadow(remap = false)
+    @Final @Shadow
     private List<OptionPage> pages;
 
 

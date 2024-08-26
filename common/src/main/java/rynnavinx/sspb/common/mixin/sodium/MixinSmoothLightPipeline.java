@@ -52,13 +52,13 @@ import java.lang.invoke.MethodType;
 import java.util.BitSet;
 
 
-@Mixin(SmoothLightPipeline.class)
+@Mixin(value = SmoothLightPipeline.class, remap = false)
 public abstract class MixinSmoothLightPipeline {
 
-	@Final @Shadow(remap = false)
+	@Final @Shadow
 	private LightDataAccess lightCache;
 
-	@Shadow(remap = false)
+	@Shadow
 	private static int getLightMapCoord(float sl, float bl) {return 0;}
 
 	@Unique
@@ -148,7 +148,7 @@ public abstract class MixinSmoothLightPipeline {
 		sspb$applyInsetPartialFaceVertex(pos, dir, n1d, n2d, w, i, out, shade, false);
 	}
 
-	@ModifyVariable(method = "gatherInsetFace", at = @At("STORE"), ordinal = 0, remap = false)
+	@ModifyVariable(method = "gatherInsetFace", at = @At("STORE"), ordinal = 0)
 	private float modifyGatherInsetFaceW1(float w1, ModelQuadView quad, BlockPos blockPos, int vertexIndex, Direction lightFace, boolean shade){
 		if(SSPBClientMod.options().onlyAffectPathBlocks && !(lightCache.getLevel().getBlockState(blockPos).getBlock() instanceof DirtPathBlock)){
 			return w1;

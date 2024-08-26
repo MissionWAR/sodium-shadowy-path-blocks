@@ -48,6 +48,10 @@ pluginManagement {
                 includeGroup("codechicken")
             }
         }
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
     }
 }
 
@@ -60,4 +64,4 @@ rootProject.name = 'sodium-shadowy-path-blocks'
 include('common')
 include('fabric')
 include('neoforge')
-//include('forge')
+include('forge')

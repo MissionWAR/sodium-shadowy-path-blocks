@@ -25,3 +25,5 @@ build
 eclipse
 run
 runs
+/forge/src/test/
+/forge/src/generated/
