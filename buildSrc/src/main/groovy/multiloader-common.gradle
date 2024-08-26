@@ -112,9 +112,10 @@ processResources {
             'neoforge_loader_version_range': neoforge_loader_version_range,
             'forge_version'                : forge_version,
             'forge_loader_version_range'   : forge_loader_version_range,
-            'credits'                      : credits,
             'archives_base_name'           : archives_base_name,
-			'sodium_version'               : sodium_version
+			'sodium_version'               : sodium_version,
+            'issue_tracker_url'            : issue_tracker_url,
+            'modrinth_url'                 : modrinth_url
     ]
 
     filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', '*.mixins.json']) {

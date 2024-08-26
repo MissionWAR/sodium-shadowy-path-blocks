@@ -1,9 +1,9 @@
 {
   "pack": {
-    "description": "Sodium Shadowy Path Blocks",
+    "description": "${mod_name}",
     "pack_format": 15,
 	"supported_formats": {
-		"min_inclusive": 1,
+		"min_inclusive": 16,
 		"max_inclusive": 10000
 	}
   }
