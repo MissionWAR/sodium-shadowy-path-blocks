@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+
+  "name": "${mod_name}",
+  "description": "${description}",
+  "authors": [
+    "${mod_author}"
+  ],
+  "contact": {
+    "sources": "https://github.com/Rynnavinx/sodium-shadowy-path-blocks",
+    "issues": "${issue_tracker_url}"
+  },
+
+  "license": "${license}",
+  "icon": "assets/${mod_id}/icon.png",
+
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.modrinth": "${modrinth_url}",
+        "modmenu.curseforge" : "https://www.curseforge.com/minecraft/mc-mods/sodium-shadowy-path-blocks"
+      }
+    }
+  },
+
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "rynnavinx.sspb.fabric.client.SSPBFabricClientMod"
+    ]
+  },
+  "mixins": [
+    "${mod_id}.mixins.json",
+    "${mod_id}.fabric.mixins.json"
+  ],
+
+  "accessWidener" : "${mod_id}.accesswidener",
+
+  "depends": {
+    "fabricloader": ">=0.12.10",
+    "java": ">=17",
+    "sodium": ">=0.6.0-"
+  }
+}
