@@ -13,9 +13,6 @@ logoFile = "assets/${mod_id}/icon.png" #optional
 authors = "${mod_author}" #optional
 description = '''${description}''' #mandatory (Supports multiline text)
 
-[[mixins]]
-config = "${mod_id}.mixins.json"
-
 [[dependencies.${mod_id}]]
 modId = "sodium"
 mandatory = true

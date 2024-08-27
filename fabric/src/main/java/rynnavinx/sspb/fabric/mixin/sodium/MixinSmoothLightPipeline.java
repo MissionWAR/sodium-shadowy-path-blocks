@@ -19,32 +19,33 @@
 	 * limitations under the License.
  */
 
-package rynnavinx.sspb.common.mixin.sodium;
+package rynnavinx.sspb.fabric.mixin.sodium;
 
 import net.caffeinemc.mods.sodium.client.model.light.data.LightDataAccess;
-import net.caffeinemc.mods.sodium.client.model.light.smooth.SmoothLightPipeline;
 import net.caffeinemc.mods.sodium.client.model.light.data.QuadLightData;
+import net.caffeinemc.mods.sodium.client.model.light.smooth.SmoothLightPipeline;
 import net.caffeinemc.mods.sodium.client.model.quad.ModelQuadView;
 import net.caffeinemc.mods.sodium.client.render.frapi.mesh.EncodingFormat;
 import net.caffeinemc.mods.sodium.client.render.frapi.mesh.QuadViewImpl;
-
 import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.DirtPathBlock;
 import net.minecraft.world.level.block.state.BlockState;
-
-import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import rynnavinx.sspb.common.client.SSPBClientMod;
 import rynnavinx.sspb.common.client.render.frapi.aocalc.VanillaAoHelper;
 import rynnavinx.sspb.common.mixin.minecraft.AmbientOcclusionFaceAccessor;
+import rynnavinx.sspb.common.mixin.sodium.AoFaceDataAccessor;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -52,7 +53,11 @@ import java.lang.invoke.MethodType;
 import java.util.BitSet;
 
 
-@Mixin(value = SmoothLightPipeline.class, remap = false)
+// Same as the version of this mixin in common, but remap is not set to false in the below annotation
+// Fabric crashes with remap = false here, but Forge doesn't compile without it
+// Ideally I wouldn't have to copy the whole class, but I can't use a variable boolean to set remap,
+// and extending the original class doesn't work with mixins
+@Mixin(value = SmoothLightPipeline.class)
 public abstract class MixinSmoothLightPipeline {
 
 	@Final @Shadow(remap = false)
