@@ -32,7 +32,7 @@ import rynnavinx.sspb.common.client.render.frapi.aocalc.VanillaAoHelper;
 
 
 @Mixin(ModelBlockRenderer.class)
-public abstract class MixinModelBlockRenderer {
+public abstract class ModelBlockRendererMixin {
 
     @Inject(at = @At("RETURN"), method = "<init>*")
     private void onInit(CallbackInfo ci) {

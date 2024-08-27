@@ -7,9 +7,9 @@
   "client": [
     "minecraft.AmbientOcclusionFaceAccessor",
     "minecraft.ModelBlockRendererAccessor",
-    "minecraft.frapi.MixinModelBlockRenderer",
+    "minecraft.frapi.ModelBlockRendererMixin",
     "sodium.AoFaceDataAccessor",
-    "sodium.MixinSodiumOptionsGUI"
+    "sodium.SodiumOptionsGUIMixin"
   ],
   "injectors": {
     "defaultRequire": 1

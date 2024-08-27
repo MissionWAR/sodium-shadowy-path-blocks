@@ -16,7 +16,7 @@ import java.util.List;
 
 
 @Mixin(SodiumOptionsGUI.class)
-public abstract class MixinSodiumOptionsGUI {
+public abstract class SodiumOptionsGUIMixin {
 
     @Final @Shadow(remap = false)
     private List<OptionPage> pages;
