@@ -1,0 +1,9 @@
+{
+    "sspb.pages.sspb_page.name": "SSPB",
+    "sspb.options.shadowyness.name": "Intensidade do Sombreamento",
+    "sspb.options.shadowyness.tooltip": "Ajusta a intensidade do sombreamento vanilla em blocos não inteiros.\n\n0% - Nenhum (Padrão do Sodium)\n85% - Padrão\n100% - Máximo (Pode ser mais escuro que o vanilla em certas ocasiões).\n\nNão afeta blocos de caminhos de terra quando \"Usar iluminação vanilla para blocos de caminho de terra\" está ativado.",
+    "sspb.options.onlyaffectpathblocks.name": "Afeta apenas blocos de caminho de terra",
+    "sspb.options.onlyaffectpathblocks.tooltip": "O bug no Minecraft vanilla que causa sombreamento nos blocos de caminho, na verdade, afeta todos os blocos sólidos não inteiros.\n\nPor padrão, o SSPB aplica a iluminação suave semelhante à do vanilla a todos os blocos sólidos não inteiros. Ativar esta opção limitará os efeitos apenas aos blocos de caminho.",
+    "sspb.options.vanillapathblocklighting.name": "Usar iluminação vanilla para blocos de caminho de terra",
+    "sspb.options.vanillapathblocklighting.tooltip": "Quando ativado, a iluminação do bloco de caminho de terra será renderizada com um algoritmo preciso, em troca de uma versão modificada do algoritmo de iluminação do Sodium.\n\nEsta opção desativa o controle deslizante da \"Intensidade do Sombreamento\" nos blocos de caminho de terra."
+}
