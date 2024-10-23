@@ -32,7 +32,9 @@ import net.minecraft.client.renderer.block.ModelBlockRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.DirtPathBlock;
+import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 
 import org.spongepowered.asm.mixin.*;
@@ -44,11 +46,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import rynnavinx.sspb.common.client.SSPBClientMod;
 import rynnavinx.sspb.common.client.render.frapi.aocalc.VanillaAoHelper;
+import rynnavinx.sspb.common.client.util.MethodSignature;
 import rynnavinx.sspb.common.mixin.minecraft.AmbientOcclusionFaceAccessor;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Method;
 import java.util.BitSet;
 
 
@@ -64,15 +68,61 @@ public abstract class SmoothLightPipelineMixin {
 	@Unique
 	private static final MethodHandle sspb$getCachedFaceDataHandle;
 
+	@Unique
+	private static final MethodSignature[] sspb$propagatesSkylightDownMethodSignatures = {
+			// Different mappings are used depending on loader and if the game is run in a dev environment or not
+			// The equivalent mojmap and yarn method signatures MUST be given in the same order
+
+			// Mojmap:
+			new MethodSignature("propagatesSkylightDown", new Class[]{BlockGetter.class, BlockPos.class}), // 1.20.1+ method signature
+			new MethodSignature("propagatesSkylightDown", new Class[]{}), // 1.21.2+ method signature
+
+			// Yarn:
+			new MethodSignature("method_26167", new Class[]{BlockGetter.class, BlockPos.class}), // 1.20.1+ method signature
+			new MethodSignature("method_26167", new Class[]{}) // 1.21.2+ method signature
+	};
+
+	@Unique
+	private static MethodHandle sspb$propagatesSkylightDownHandle = null;
+
+	@Unique
+	private static int sspb$propagatesSkylightDownVersion = -1;
+
 
 	static {
+		MethodHandles.Lookup lookup = MethodHandles.lookup();
+
+		// Set method handle for getCachedFaceData
 		try {
-			MethodHandles.Lookup lookup = MethodHandles.lookup();
 			Class<?> aoFaceDataClass = Class.forName("net.caffeinemc.mods.sodium.client.model.light.smooth.AoFaceData");
 
 			sspb$getCachedFaceDataHandle = lookup.findVirtual(SmoothLightPipeline.class, "getCachedFaceData", MethodType.methodType(aoFaceDataClass, BlockPos.class, Direction.class, boolean.class, boolean.class));
 		} catch (NoSuchMethodException | IllegalAccessException | ClassNotFoundException e) {
 			throw new RuntimeException(e);
+		}
+
+		// Set method handle for propagatesSkyLightDown - searches for the method, as the signature is different across versions
+		Method[] blockStateMethods = BlockState.class.getMethods();
+		outerLoop:
+		for(int i = 0; i < sspb$propagatesSkylightDownMethodSignatures.length; ++i){
+			for(Method method : blockStateMethods) {
+				if(sspb$propagatesSkylightDownMethodSignatures[i].equals(MethodSignature.fromMethod(method))) {
+                    try {
+                        sspb$propagatesSkylightDownHandle = lookup.unreflect(method);
+                    } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+
+					// Modulus on i, so that sspb$propagatesSkylightDownVersion is set to the same value regardless of mojmap or yarn
+					sspb$propagatesSkylightDownVersion = i % (sspb$propagatesSkylightDownMethodSignatures.length / 2);
+
+					break outerLoop;
+				}
+			}
+		}
+
+		if(sspb$propagatesSkylightDownHandle == null){
+			throw new RuntimeException("\"propagatesSkylightDown\" method not found.");
 		}
 	}
 
@@ -81,6 +131,20 @@ public abstract class SmoothLightPipelineMixin {
 	private AoFaceDataAccessor sspb$getCachedFaceData(BlockPos pos, Direction dir, boolean offset, boolean shade){
 		try {
 			return (AoFaceDataAccessor) sspb$getCachedFaceDataHandle.invoke((SmoothLightPipeline) (Object) this, pos, dir, offset, shade);
+		} catch (Throwable e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Unique
+	private boolean sspb$propagatesSkylightDown(BlockBehaviour.BlockStateBase blockStateBase, BlockGetter level, BlockPos pos){
+		try {
+			if(sspb$propagatesSkylightDownVersion == 0){
+				return (boolean) sspb$propagatesSkylightDownHandle.invoke(blockStateBase, level, pos);
+			}
+			else{
+				return (boolean) sspb$propagatesSkylightDownHandle.invoke(blockStateBase);
+			}
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}
@@ -115,7 +179,7 @@ public abstract class SmoothLightPipelineMixin {
 		BlockState blockState = lightCache.getLevel().getBlockState(pos);
 		boolean onlyAffectPathBlocks = SSPBClientMod.options().onlyAffectPathBlocks;
 
-		if((!onlyAffectPathBlocks && blockState.propagatesSkylightDown(lightCache.getLevel(), pos)) ||
+		if((!onlyAffectPathBlocks && sspb$propagatesSkylightDown(blockState, lightCache.getLevel(), pos)) ||
 				(isParallel && onlyAffectPathBlocks && blockState.getBlock() instanceof DirtPathBlock)){
 
 			// Mix between sodium inset lighting (default applyInsetPartialFaceVertex) and vanilla-like inset lighting (applyAlignedPartialFaceVertex).
