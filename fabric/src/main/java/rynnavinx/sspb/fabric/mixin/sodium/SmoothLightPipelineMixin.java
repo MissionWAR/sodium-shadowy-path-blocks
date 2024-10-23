@@ -79,13 +79,13 @@ public abstract class SmoothLightPipelineMixin {
 	@Unique
 	private static final MethodSignature[] sspb$propagatesSkylightDownMethodSignatures = {
 			// Different mappings are used depending on loader and if the game is run in a dev environment or not
-			// The equivalent mojmap and yarn method signatures MUST be given in the same order
+			// The equivalent mojmap and yarn intermediary method signatures MUST be given in the same order
 
 			// Mojmap:
 			new MethodSignature("propagatesSkylightDown", new Class[]{BlockGetter.class, BlockPos.class}), // 1.20.1+ method signature
 			new MethodSignature("propagatesSkylightDown", new Class[]{}), // 1.21.2+ method signature
 
-			// Yarn:
+			// Yarn Intermediary:
 			new MethodSignature("method_26167", new Class[]{BlockGetter.class, BlockPos.class}), // 1.20.1+ method signature
 			new MethodSignature("method_26167", new Class[]{}) // 1.21.2+ method signature
 	};
@@ -121,7 +121,7 @@ public abstract class SmoothLightPipelineMixin {
 						throw new RuntimeException(e);
 					}
 
-					// Modulus on i, so that sspb$propagatesSkylightDownVersion is set to the same value regardless of mojmap or yarn
+					// Modulus on i, so that sspb$propagatesSkylightDownVersion is set to the same value regardless of mojmap or yarn intermediary
 					sspb$propagatesSkylightDownVersion = i % (sspb$propagatesSkylightDownMethodSignatures.length / 2);
 
 					break outerLoop;

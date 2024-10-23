@@ -12,9 +12,8 @@ public record MethodSignature(String name, Class<?>[] paramTypes) {
 
     @Override
     public boolean equals(Object other){
-        if(!(other instanceof MethodSignature otherMethodInfo)) {return false;}
+        if(!(other instanceof MethodSignature otherMethodSignature)) {return false;}
 
-        return this.name.equals(otherMethodInfo.name) &&
-                Arrays.equals(this.paramTypes, otherMethodInfo.paramTypes);
+        return this.name.equals(otherMethodSignature.name) && Arrays.equals(this.paramTypes, otherMethodSignature.paramTypes);
     }
 }
